@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LyricsGen Upload</title>
+</head>
+<body>
+  <h1>Upload Your Song</h1>
+  <input type="file" id="audio-upload" accept="audio/*" />
+  <button id="upload-btn">Upload Song</button>
+  <pre id="lyrics-output"></pre>
+<script>
+  const uploadBtn = document.getElementById('upload-btn');
+  const fileInput = document.getElementById('audio-upload');
+  const lyricsOutput = document.getElementById('lyrics-output');
+  uploadBtn.addEventListener('click', () => {
+    const file = fileInput.files[0];
+    if (!file) {
+      alert('Please select an audio file first');
+      return;
+    }
+    const form = new FormData();
+    form.append('file', file, file.name);
+    fetch('/ingest/upload', {
+      method: 'POST',
+      body: form,
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Generated Lyrics:', data.generated);
+        lyricsOutput.textContent = data.generated;
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error generating lyrics');
+      });
+  });
+</script>
+</body>
+</html>
